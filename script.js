@@ -122,7 +122,22 @@ function showSuggestions() {
     });
 }
 
-// Render list view - grouped by course
+// Convert time to sortable format (HH:MM)
+function timeToMinutes(timeStr) {
+    const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)?/);
+    if (!match) return 0;
+    
+    let hours = parseInt(match[1]);
+    const minutes = parseInt(match[2]);
+    const meridiem = match[3];
+    
+    if (meridiem === 'PM' && hours !== 12) hours += 12;
+    if (meridiem === 'AM' && hours === 12) hours = 0;
+    
+    return hours * 60 + minutes;
+}
+
+// Render list view - grouped by course, then by day, sorted by time
 function renderListView(sessions) {
     const listContainer = document.getElementById('sessionsList');
     
@@ -154,7 +169,7 @@ function renderListView(sessions) {
     listContainer.innerHTML = html;
 }
 
-// Create session card HTML
+// Create session card HTML - with sessions grouped and sorted by day and time
 function createSessionCard(session) {
     const isBiology = session.course.startsWith('BIOL');
     const isOnline = session.room === 'ONLINE';
@@ -169,19 +184,43 @@ function createSessionCard(session) {
         ? `<a href="${hasOnlineLink}" class="room-link-inline" target="_blank" rel="noopener noreferrer">🌐 ${session.room}</a>`
         : `<span class="room-text-inline">${isOnline ? '🌐' : '🚪'} ${session.room}</span>`;
     
-    const sessionsTable = session.allSessions
-        .map(s => `
-            <tr>
-                <td class="day-cell">${s.day}</td>
-                <td class="time-cell">${s.time}</td>
-                <td class="si-leader-cell">${session.instructor}</td>
-                <td class="room-cell">${roomCell}</td>
-                <td class="topic-cell">
-                    ${isBiology && s.topic ? s.topic : (isBiology ? '<span class="no-topic">TBA</span>' : '')}
-                </td>
-            </tr>
-        `)
-        .join('');
+    // Sort sessions by day order, then by time
+    const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const sortedSessions = session.allSessions.sort((a, b) => {
+        const dayDiff = dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day);
+        if (dayDiff !== 0) return dayDiff;
+        return timeToMinutes(a.time) - timeToMinutes(b.time);
+    });
+    
+    // Group sorted sessions by day
+    const sessionsByDay = {};
+    sortedSessions.forEach(s => {
+        if (!sessionsByDay[s.day]) {
+            sessionsByDay[s.day] = [];
+        }
+        sessionsByDay[s.day].push(s);
+    });
+    
+    // Build table rows grouped by day
+    let tableRows = '';
+    Object.keys(sessionsByDay).forEach(day => {
+        const daySessions = sessionsByDay[day];
+        daySessions.forEach((s, index) => {
+            // Only show day name for the first session of that day
+            const dayDisplay = index === 0 ? day : '';
+            tableRows += `
+                <tr>
+                    <td class="day-cell">${dayDisplay}</td>
+                    <td class="time-cell">${s.time}</td>
+                    <td class="si-leader-cell">${session.instructor}</td>
+                    <td class="room-cell">${roomCell}</td>
+                    <td class="topic-cell">
+                        ${isBiology && s.topic ? s.topic : (isBiology ? '<span class="no-topic">TBA</span>' : '')}
+                    </td>
+                </tr>
+            `;
+        });
+    });
     
     return `
         <div class="session-card">
@@ -196,7 +235,7 @@ function createSessionCard(session) {
                     </tr>
                 </thead>
                 <tbody>
-                    ${sessionsTable}
+                    ${tableRows}
                 </tbody>
             </table>
         </div>
@@ -227,9 +266,15 @@ function renderCalendarView(sessions) {
                 topic: s.topic,
                 room: session.room,
                 instructor: session.instructor,
-                isBiology: session.course.startsWith('BIOL')
+                isBiology: session.course.startsWith('BIOL'),
+                timeMinutes: timeToMinutes(s.time)
             });
         });
+    });
+    
+    // Sort events by time within each day
+    Object.keys(eventsByDay).forEach(day => {
+        eventsByDay[day].sort((a, b) => a.timeMinutes - b.timeMinutes);
     });
     
     // Add events to calendar days
