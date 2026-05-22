@@ -460,3 +460,45 @@ body {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+
+/* Collapsible course header *//* Collapsible course header {
+    content: "▼";
+    position: absolute;
+    right: 10px;
+    transition: transform 0.3s;
+}
+
+.course-title.active::after {
+    transform: rotate(-90deg);
+}
+
+/* Collapsible content */
+.course-content {
+    margin-top: 10px;
+}
+
+/* Day spacing */
+.day-group {
+    margin-top: 15px;
+}
+
+/* Table spacing per day */
+.sessions-table {
+    margin-top: 8px;
+}
+
+/* Make tables cleaner */
+.sessions-table th {
+    background: var(--bg-light);
+}
+
+/* Optional: subtle hover highlight */
+.sessions-table tbody tr:hover {
+    background-color: #f3f4f6;
+}
+.course-title {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
