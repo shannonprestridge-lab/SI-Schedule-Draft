@@ -144,36 +144,12 @@ function renderListView(sessions) {
 
     if (sessions.length === 0) {
         listContainer.innerHTML = '';
-        
-// ✅ COLLAPSIBLE behavior
-document.querySelectorAll('.course-title').forEach(header => {
-    header.addEventListener('click', () => {
-        const content = header.nextElementSibling;
-
-        const isOpen = content.style.display === 'block';
-
-        // Close all courses first
-        document.querySelectorAll('.course-content').forEach(c => {
-            c.style.display = 'none';
-        });
-        document.querySelectorAll('.course-title').forEach(h => {
-            h.classList.remove('active');
-        });
-
-        // Open clicked one (if it was closed)
-        if (!isOpen) {
-            content.style.display = 'block';
-            header.classList.add('active');
-        }
-    });
-});
-
         return;
     }
 
     const courses = {};
 
-    // Group and flatten
+    // Group and flatten sessions
     sessions.forEach(session => {
         if (!courses[session.course]) {
             courses[session.course] = [];
@@ -186,7 +162,6 @@ document.querySelectorAll('.course-title').forEach(header => {
                 room: session.room,
                 topic: s.topic,
                 isBiology: session.course.startsWith('BIOL'),
-                course: session.course,
                 timeMinutes: timeToMinutes(s.time)
             });
         });
@@ -212,14 +187,12 @@ document.querySelectorAll('.course-title').forEach(header => {
             byDay[s.day].push(s);
         });
 
-        // Course block (collapsible)
         html += `
         <div class="course-group">
             <h2 class="course-title">${course}</h2>
             <div class="course-content">
         `;
 
-        // Render each day
         dayOrder.forEach(day => {
             if (!byDay[day]) return;
 
@@ -233,7 +206,7 @@ document.querySelectorAll('.course-title').forEach(header => {
                             <th>Time</th>
                             <th>SI Leader</th>
                             <th>Location</th>
-                            ${byDay[day][0].isBiology ? '<th>Topic</th>' : ''}
+                            <th>Topic</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -241,24 +214,46 @@ document.querySelectorAll('.course-title').forEach(header => {
 
             byDay[day].forEach(s => {
 
-                const isOnline = s.room === 'ONLINE';
-
-                const onlineLinkKey =
-                    s.course === 'BIOL 189' && s.instructor === 'Matt Scalzi'
-                        ? 'BIOL 189-Matt'
-                        : s.course;
-
-                const hasOnlineLink = onlineLinks[onlineLinkKey];
-
-                let roomDisplay = `${isOnline ? '🌐' : '🚪'} ${s.room}`;
-                if (isOnline && hasOnlineLink) {
-                    roomDisplay = `<a href="${hasOnlineLink}" target="_blank">🌐 ONLINE</a>`;
-                }
-
                 html += `
                     <tr>
-                        <td class="time-cell">${s.time}</td>
-                        <td class="si-leader-cell">${s.instructor}</td>
+                        <td>${s.time}</td>
+                        <td>${s.instructor}</td>
+                        <td>${s.room}</td>
+                        <td>${s.isBiology ? (s.topic || 'TBA') : ''}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            </div>
+            `;
+        });
+
+        html += `</div></div>`;
+    });
+
+    listContainer.innerHTML = html;
+
+    // ✅ COLLAPSIBLE
+    document.querySelectorAll('.course-title').forEach(header => {
+        header.addEventListener('click', () => {
+            const content = header.nextElementSibling;
+
+            const isOpen = content.style.display === 'block';
+
+            document.querySelectorAll('.course-content').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('.course-title').forEach(h => h.classList.remove('active'));
+
+            if (!isOpen) {
+                content.style.display = 'block';
+                header.classList.add('active');
+            }
+        });
+    });
+}
+``
 
 
 // Create session card HTML - with sessions grouped and sorted by day and time
