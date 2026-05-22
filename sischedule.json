@@ -1,0 +1,101 @@
+[
+  {
+    "course": "BIOL 224",
+    "instructor": "Adriana Renteria",
+    "room": "NLVS245",
+    "sessions": [
+      { "day": "Monday", "time": "4:00 PM - 5:30 PM", "topic": "Blood" },
+      { "day": "Tuesday", "time": "4:00 PM - 5:30 PM", "topic": "The Heart and Circulatory System" },
+      { "day": "Wednesday", "time": "4:00 PM - 5:30 PM", "topic": "Blood Vessels" },
+      { "day": "Thursday", "time": "4:00 PM - 5:30 PM", "topic": "Lymphatic System" }
+    ]
+  },
+  {
+    "course": "BIOL 251",
+    "instructor": "Harper Whalen",
+    "room": "ONLINE",
+    "sessions": [
+      { "day": "Monday", "time": "11:00 AM - 12:30 PM", "topic": "Viruses" },
+      { "day": "Tuesday", "time": "11:00 AM - 12:30 PM", "topic": "Bacteria" },
+      { "day": "Wednesday", "time": "11:00 AM - 12:30 PM", "topic": "Small things that wiggle" },
+      { "day": "Thursday", "time": "11:00 AM - 12:30 PM", "topic": "Things that live on your door knob" }
+    ]
+  },
+  {
+    "course": "BIOL 223",
+    "instructor": "Imanol Cabrera",
+    "room": "WCD220",
+    "sessions": [
+      { "day": "Monday", "time": "3:00 PM - 4:30 PM", "topic": "Central Nervous System" },
+      { "day": "Tuesday", "time": "3:00 PM - 4:30 PM", "topic": "Autonomic Nervous System" },
+      { "day": "Wednesday", "time": "3:00 PM - 4:30 PM", "topic": "Sympathetic Nervous System" },
+      { "day": "Thursday", "time": "3:00 PM - 4:30 PM", "topic": "Avoiding Zombies" }
+    ]
+  },
+  {
+    "course": "BIOL 224",
+    "instructor": "Justice Isom",
+    "room": "WCD220",
+    "sessions": [
+      { "day": "Monday", "time": "1:15 PM - 2:45 PM", "topic": "Blood and Vessels" },
+      { "day": "Tuesday", "time": "1:15 PM - 2:45 PM", "topic": "The Chambers of the Heart" },
+      { "day": "Wednesday", "time": "1:15 PM - 2:45 PM", "topic": "Circulatory System" },
+      { "day": "Thursday", "time": "1:15 PM - 2:45 PM", "topic": "The aorta" }
+    ]
+  },
+  {
+    "course": "CHEM 108",
+    "instructor": "Matt Scalzi",
+    "room": "ONLINE",
+    "sessions": [
+      { "day": "Monday", "time": "7:00 PM - 8:30 PM", "topic": null },
+      { "day": "Tuesday", "time": "10:00 AM - 11:30 AM", "topic": null },
+      { "day": "Wednesday", "time": "7:00 PM - 8:30 PM", "topic": null },
+      { "day": "Thursday", "time": "10:30 AM - 11:30 AM", "topic": null }
+    ]
+  },
+  {
+    "course": "BIOL 189",
+    "instructor": "Stephanie Gentry",
+    "room": "ONLINE",
+    "sessions": [
+      { "day": "Monday", "time": "2:00 PM - 3:30 PM", "topic": "Study Skills for BIOL 189" },
+      { "day": "Tuesday", "time": "2:00 PM - 3:30 PM", "topic": "Water & Chemistry" },
+      { "day": "Wednesday", "time": "2:00 PM - 3:30 PM", "topic": "Cell structure" },
+      { "day": "Thursday", "time": "2:00 PM - 3:30 PM", "topic": "Cell membranes" }
+    ]
+  },
+  {
+    "course": "BIOL 189",
+    "instructor": "Sara Anguiano",
+    "room": "NLVS247",
+    "sessions": [
+      { "day": "Monday", "time": "6:00 PM - 7:30 PM", "topic": "Study Skills for BIOL 189" },
+      { "day": "Tuesday", "time": "6:00 PM - 7:30 PM", "topic": "Water and polarity" },
+      { "day": "Wednesday", "time": "6:00 PM - 7:30 PM", "topic": "Cell structure" },
+      { "day": "Friday", "time": "8:00 AM - 9:30 AM", "topic": "Cell membranes" }
+    ]
+  },
+  {
+    "course": "BIOL 223",
+    "instructor": "Sebastien Yokoyama",
+    "room": "HC120",
+    "sessions": [
+      { "day": "Monday", "time": "1:00 PM - 2:30 PM", "topic": "Intro to BIOL 223/Bones" },
+      { "day": "Tuesday", "time": "1:00 PM - 2:30 PM", "topic": "Skeletal System" },
+      { "day": "Wednesday", "time": "1:00 PM - 2:30 PM", "topic": "Bones" },
+      { "day": "Thursday", "time": "1:00 PM - 2:30 PM", "topic": "Skulls" }
+    ]
+  },
+  {
+    "course": "BIOL 189",
+    "instructor": "Matt Scalzi",
+    "room": "ONLINE",
+    "sessions": [
+      { "day": "Monday", "time": "10:00 AM - 11:30 AM", "topic": "Study Skills for BIOL 189" },
+      { "day": "Tuesday", "time": "7:00 PM - 8:30 PM", "topic": "Water and life" },
+      { "day": "Wednesday", "time": "10:00 AM - 11:30 AM", "topic": "Cell structure" },
+      { "day": "Thursday", "time": "7:00 PM - 8:30 PM", "topic": "Cell membranes" }
+    ]
+  }
+]
