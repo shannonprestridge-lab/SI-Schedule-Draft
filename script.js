@@ -5,6 +5,11 @@ let filteredSessions = [];
 // Days of the week mapping for calendar
 const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+// Online session links mapping
+const onlineLinks = {
+    'BIOL 251': 'https://csn.rooms.blindsidenetworks.com/rooms/7ju-mlt-rxl-ubw/join'
+};
+
 // Load data on page load
 document.addEventListener('DOMContentLoaded', async () => {
     await loadScheduleData();
@@ -134,9 +139,10 @@ function renderListView(sessions) {
 function createSessionCard(session) {
     const isBiology = session.course.startsWith('BIOL');
     const isOnline = session.room === 'ONLINE';
+    const hasOnlineLink = onlineLinks[session.course];
     
     const roomDisplay = isOnline 
-        ? `<a href="#" class="room-link" onclick="openOnlineSession(event)">🌐 ${session.room}</a>`
+        ? `<a href="${hasOnlineLink || '#'}" class="room-link" ${hasOnlineLink ? 'target="_blank" rel="noopener noreferrer"' : 'onclick="openOnlineSession(event)"'}>🌐 ${session.room}</a>`
         : `<span class="room-text">🚪 ${session.room}</span>`;
     
     const sessionsTable = session.allSessions
@@ -226,8 +232,8 @@ function renderCalendarView(sessions) {
     calendarContainer.innerHTML = html;
 }
 
-// Open online session (placeholder function)
+// Open online session (for courses without a configured link)
 function openOnlineSession(event) {
     event.preventDefault();
-    alert('Online session link would be opened here. Configure your Zoom/Teams link in the code.');
+    alert('Online session link would be opened here. Configure your BigBlueButton/Zoom/Teams link for this course.');
 }
