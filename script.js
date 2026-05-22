@@ -165,9 +165,9 @@ function createSessionCard(session) {
         : session.course;
     const hasOnlineLink = onlineLinks[onlineLinkKey];
     
-    const roomDisplay = isOnline 
-        ? `<a href="${hasOnlineLink || '#'}" class="room-link" ${hasOnlineLink ? 'target="_blank" rel="noopener noreferrer"' : 'onclick="openOnlineSession(event)"'}>🌐 ${session.room}</a>`
-        : `<span class="room-text">🚪 ${session.room}</span>`;
+    const roomCell = isOnline && hasOnlineLink
+        ? `<a href="${hasOnlineLink}" class="room-link-inline" target="_blank" rel="noopener noreferrer">🌐 ${session.room}</a>`
+        : `<span class="room-text-inline">${isOnline ? '🌐' : '🚪'} ${session.room}</span>`;
     
     const sessionsTable = session.allSessions
         .map(s => `
@@ -175,6 +175,7 @@ function createSessionCard(session) {
                 <td class="day-cell">${s.day}</td>
                 <td class="time-cell">${s.time}</td>
                 <td class="si-leader-cell">${session.instructor}</td>
+                <td class="room-cell">${roomCell}</td>
                 <td class="topic-cell">
                     ${isBiology && s.topic ? s.topic : (isBiology ? '<span class="no-topic">TBA</span>' : '')}
                 </td>
@@ -184,15 +185,13 @@ function createSessionCard(session) {
     
     return `
         <div class="session-card">
-            <div class="room-info">
-                ${roomDisplay}
-            </div>
             <table class="sessions-table">
                 <thead>
                     <tr>
                         <th>Day</th>
                         <th>Time</th>
                         <th>SI Leader</th>
+                        <th>Room</th>
                         ${isBiology ? '<th>Topic</th>' : ''}
                     </tr>
                 </thead>
