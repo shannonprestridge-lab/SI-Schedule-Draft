@@ -502,3 +502,51 @@ body {
     user-select: none;
     position: relative;
 }
+
+.course-title {
+    cursor: pointer;
+    position: relative;
+}
+
+/* arrow */
+.course-title::after {
+    content: "▼";
+    position: absolute;
+    right: 10px;
+    transition: transform 0.3s;
+}
+
+/* collapsed state */
+.course-title.active::after {
+    transform: rotate(-90deg);
+}
+
+/* START COLLAPSED */
+.course-content {
+    display: none;
+    padding-top: 10px;
+}
+.day-group {
+    margin-top: 20px;
+}
+
+.sessions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+}
+
+.sessions-table th {
+    background: var(--bg-light);
+    font-weight: 600;
+}
+
+.sessions-table th,
+.sessions-table td {
+    padding: 10px;
+    text-align: left;
+}
+
+.sessions-table tr:hover {
+    background-color: #f9fafb;
+}
