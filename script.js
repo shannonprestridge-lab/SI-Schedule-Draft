@@ -7,7 +7,8 @@ const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Fri
 
 // Online session links mapping
 const onlineLinks = {
-    'BIOL 251': 'https://csn.rooms.blindsidenetworks.com/rooms/7ju-mlt-rxl-ubw/join'
+    'BIOL 251': 'https://csn.rooms.blindsidenetworks.com/rooms/7ju-mlt-rxl-ubw/join',
+    'BIOL 189-Matt': 'https://csn.rooms.blindsidenetworks.com/rooms/mqf-nij-ffc-jc7/join'
 };
 
 // Load data on page load
@@ -139,7 +140,12 @@ function renderListView(sessions) {
 function createSessionCard(session) {
     const isBiology = session.course.startsWith('BIOL');
     const isOnline = session.room === 'ONLINE';
-    const hasOnlineLink = onlineLinks[session.course];
+    
+    // Check for online link - handle both course-only and course-instructor combinations
+    const onlineLinkKey = session.course === 'BIOL 189' && session.instructor === 'Matt Scalzi' 
+        ? 'BIOL 189-Matt' 
+        : session.course;
+    const hasOnlineLink = onlineLinks[onlineLinkKey];
     
     const roomDisplay = isOnline 
         ? `<a href="${hasOnlineLink || '#'}" class="room-link" ${hasOnlineLink ? 'target="_blank" rel="noopener noreferrer"' : 'onclick="openOnlineSession(event)"'}>🌐 ${session.room}</a>`
