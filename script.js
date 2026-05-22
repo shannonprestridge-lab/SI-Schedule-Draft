@@ -147,15 +147,14 @@ function renderListView(sessions) {
         return;
     }
 
-    // Step 1: Group by course
     const courses = {};
 
+    // Group and flatten
     sessions.forEach(session => {
         if (!courses[session.course]) {
             courses[session.course] = [];
         }
 
-        // Flatten all sessions into one list
         session.allSessions.forEach(s => {
             courses[session.course].push({
                 ...s,
@@ -163,46 +162,61 @@ function renderListView(sessions) {
                 room: session.room,
                 topic: s.topic,
                 isBiology: session.course.startsWith('BIOL'),
-                course: session.course
+                course: session.course,
+                timeMinutes: timeToMinutes(s.time)
             });
         });
     });
 
-    // Step 2: Build HTML
     let html = '';
 
     Object.keys(courses).sort().forEach(course => {
 
         const sessionsList = courses[course];
 
-        // Step 3: Sort by day, then time
+        // Sort by day + time
         sessionsList.sort((a, b) => {
             const dayDiff = dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day);
             if (dayDiff !== 0) return dayDiff;
-            return timeToMinutes(a.time) - timeToMinutes(b.time);
+            return a.timeMinutes - b.timeMinutes;
         });
 
-        // Step 4: Group by day
+        // Group by day
         const byDay = {};
         sessionsList.forEach(s => {
-            if (!byDay[s.day]) {
-                byDay[s.day] = [];
-            }
+            if (!byDay[s.day]) byDay[s.day] = [];
             byDay[s.day].push(s);
         });
 
-        // Step 5: Render course block
-        html += `<div class="course-group">
-                    <h2 class="course-title">${course}</h2>`;
+        // Course block (collapsible)
+        html += `
+        <div class="course-group">
+            <h2 class="course-title">${course}</h2>
+            <div class="course-content">
+        `;
 
-        // Render each day in order
+        // Render each day
         dayOrder.forEach(day => {
             if (!byDay[day]) return;
 
-            html += `<div class="day-group">
-                        <h3 class="day-title">${day}</h3>`;
+            html += `
+            <div class="day-group">
+                <h3 class="day-title">${day}</h3>
+
+                <table class="sessions-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>SI Leader</th>
+                            <th>Location</th>
+                            ${byDay[day][0].isBiology ? '<th>Topic</th>' : ''}
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
 
             byDay[day].forEach(s => {
+
                 const isOnline = s.room === 'ONLINE';
 
                 const onlineLinkKey =
@@ -213,33 +227,15 @@ function renderListView(sessions) {
                 const hasOnlineLink = onlineLinks[onlineLinkKey];
 
                 let roomDisplay = `${isOnline ? '🌐' : '🚪'} ${s.room}`;
-
                 if (isOnline && hasOnlineLink) {
                     roomDisplay = `<a href="${hasOnlineLink}" target="_blank">🌐 ONLINE</a>`;
                 }
 
                 html += `
-                    <div class="session-item">
-                        <span class="time">${s.time}</span>
-                        <span class="leader">${s.instructor}</span>
-                        <span class="room">${roomDisplay}</span>
-                        ${
-                            s.isBiology
-                                ? `<span class="topic">${s.topic || 'TBA'}</span>`
-                                : ''
-                        }
-                    </div>
-                `;
-            });
+                    <tr>
+                        <td class="time-cell">${s.time}</td>
+                        <td class="si-leader-cell">${s.instructor}</td>
 
-            html += `</div>`;
-        });
-
-        html += `</div>`;
-    });
-
-    listContainer.innerHTML = html;
-}
 
 // Create session card HTML - with sessions grouped and sorted by day and time
 function createSessionCard(session) {
