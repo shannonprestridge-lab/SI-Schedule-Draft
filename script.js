@@ -122,7 +122,7 @@ function showSuggestions() {
     });
 }
 
-// Render list view
+// Render list view - grouped by course
 function renderListView(sessions) {
     const listContainer = document.getElementById('sessionsList');
     
@@ -131,9 +131,27 @@ function renderListView(sessions) {
         return;
     }
     
-    listContainer.innerHTML = sessions
-        .map(session => createSessionCard(session))
-        .join('');
+    // Group sessions by course
+    const sessionsByCoarse = {};
+    sessions.forEach(session => {
+        if (!sessionsByCoarse[session.course]) {
+            sessionsByCoarse[session.course] = [];
+        }
+        sessionsByCoarse[session.course].push(session);
+    });
+    
+    // Create grouped HTML
+    let html = '';
+    Object.keys(sessionsByCoarse).sort().forEach(course => {
+        html += `<div class="course-group">
+                    <h2 class="course-header">${course}</h2>
+                    <div class="course-sessions">
+                        ${sessionsByCoarse[course].map(session => createSessionCard(session)).join('')}
+                    </div>
+                 </div>`;
+    });
+    
+    listContainer.innerHTML = html;
 }
 
 // Create session card HTML
@@ -156,6 +174,7 @@ function createSessionCard(session) {
             <tr>
                 <td class="day-cell">${s.day}</td>
                 <td class="time-cell">${s.time}</td>
+                <td class="si-leader-cell">${session.instructor}</td>
                 <td class="topic-cell">
                     ${isBiology && s.topic ? s.topic : (isBiology ? '<span class="no-topic">TBA</span>' : '')}
                 </td>
@@ -165,8 +184,6 @@ function createSessionCard(session) {
     
     return `
         <div class="session-card">
-            <div class="course-name">${session.course}</div>
-            <div class="instructor-name">Instructor: ${session.instructor}</div>
             <div class="room-info">
                 ${roomDisplay}
             </div>
@@ -175,6 +192,7 @@ function createSessionCard(session) {
                     <tr>
                         <th>Day</th>
                         <th>Time</th>
+                        <th>SI Leader</th>
                         ${isBiology ? '<th>Topic</th>' : ''}
                     </tr>
                 </thead>
@@ -209,6 +227,7 @@ function renderCalendarView(sessions) {
                 time: s.time,
                 topic: s.topic,
                 room: session.room,
+                instructor: session.instructor,
                 isBiology: session.course.startsWith('BIOL')
             });
         });
@@ -221,6 +240,7 @@ function renderCalendarView(sessions) {
             .map(event => `
                 <div class="calendar-event">
                     <span class="calendar-event-course">${event.course}</span>
+                    <span class="calendar-event-leader">${event.instructor}</span>
                     <span class="calendar-event-time">${event.time}</span>
                     ${event.isBiology && event.topic ? `<span style="font-size: 0.75em; display: block;">${event.topic}</span>` : ''}
                 </div>
