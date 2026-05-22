@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SI Schedule - Find Your SI Sessions</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>📚 SI Schedule</h1>
+            <p>Find and join your Supplemental Instruction sessions</p>
+        </header>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <input 
+                type="text" 
+                id="courseSearch" 
+                class="search-input" 
+                placeholder="Search by course (e.g., BIOL 224, CHEM 108)"
+                autocomplete="off"
+            >
+            <div id="suggestions" class="suggestions-dropdown"></div>
+        </div>
+
+        <!-- View Toggle -->
+        <div class="view-toggle">
+            <button class="toggle-btn active" data-view="list">📋 List View</button>
+            <button class="toggle-btn" data-view="calendar">📅 Calendar View</button>
+        </div>
+
+        <!-- No Results Message -->
+        <div id="noResults" class="no-results" style="display: none;">
+            <p>No sessions found. Try searching for a different course.</p>
+        </div>
+
+        <!-- List View -->
+        <div id="listView" class="view-section active">
+            <div id="sessionsList" class="sessions-grid"></div>
+        </div>
+
+        <!-- Calendar View -->
+        <div id="calendarView" class="view-section">
+            <div id="calendar" class="calendar-grid"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
