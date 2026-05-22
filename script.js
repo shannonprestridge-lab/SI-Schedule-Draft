@@ -4,6 +4,7 @@ let filteredSessions = [];
 
 // Days of the week mapping for calendar
 const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 // Online session links mapping
 const onlineLinks = {
@@ -62,10 +63,10 @@ function initializeEventListeners() {
             
             if (view === 'list') {
                 document.getElementById('listView').classList.add('active');
-                renderListView(filteredSessions);
+                renderListView(filteredSessions.length > 0 ? filteredSessions : allSessions);
             } else {
                 document.getElementById('calendarView').classList.add('active');
-                renderCalendarView(filteredSessions);
+                renderCalendarView(filteredSessions.length > 0 ? filteredSessions : allSessions);
             }
         });
     });
@@ -93,9 +94,9 @@ function handleSearch(e) {
     // Re-render current view
     const activeView = document.querySelector('.view-section.active').id;
     if (activeView === 'listView') {
-        renderListView(filteredSessions);
+        renderListView(filteredSessions.length > 0 ? filteredSessions : allSessions);
     } else {
-        renderCalendarView(filteredSessions);
+        renderCalendarView(filteredSessions.length > 0 ? filteredSessions : allSessions);
     }
 }
 
@@ -185,8 +186,7 @@ function createSessionCard(session) {
         : `<span class="room-text-inline">${isOnline ? '🌐' : '🚪'} ${session.room}</span>`;
     
     // Sort sessions by day order, then by time
-    const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const sortedSessions = session.allSessions.sort((a, b) => {
+    const sortedSessions = [...session.allSessions].sort((a, b) => {
         const dayDiff = dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day);
         if (dayDiff !== 0) return dayDiff;
         return timeToMinutes(a.time) - timeToMinutes(b.time);
@@ -203,23 +203,25 @@ function createSessionCard(session) {
     
     // Build table rows grouped by day
     let tableRows = '';
-    Object.keys(sessionsByDay).forEach(day => {
-        const daySessions = sessionsByDay[day];
-        daySessions.forEach((s, index) => {
-            // Only show day name for the first session of that day
-            const dayDisplay = index === 0 ? day : '';
-            tableRows += `
-                <tr>
-                    <td class="day-cell">${dayDisplay}</td>
-                    <td class="time-cell">${s.time}</td>
-                    <td class="si-leader-cell">${session.instructor}</td>
-                    <td class="room-cell">${roomCell}</td>
-                    <td class="topic-cell">
-                        ${isBiology && s.topic ? s.topic : (isBiology ? '<span class="no-topic">TBA</span>' : '')}
-                    </td>
-                </tr>
-            `;
-        });
+    dayOrder.forEach(day => {
+        if (sessionsByDay[day]) {
+            const daySessions = sessionsByDay[day];
+            daySessions.forEach((s, index) => {
+                // Only show day name for the first session of that day
+                const dayDisplay = index === 0 ? day : '';
+                tableRows += `
+                    <tr>
+                        <td class="day-cell">${dayDisplay}</td>
+                        <td class="time-cell">${s.time}</td>
+                        <td class="si-leader-cell">${session.instructor}</td>
+                        <td class="room-cell">${roomCell}</td>
+                        <td class="topic-cell">
+                            ${isBiology && s.topic ? s.topic : (isBiology ? '<span class="no-topic">TBA</span>' : '')}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
     });
     
     return `
