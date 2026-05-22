@@ -147,6 +147,13 @@ function renderListView(sessions) {
         return;
     }
 
+    // Get current time
+    const now = new Date();
+    const currentDay = daysOfWeek[now.getDay()];
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    let nextSessionGlobal = null;
+
     // Step 1: Group by course
     const courses = {};
 
@@ -155,47 +162,70 @@ function renderListView(sessions) {
             courses[session.course] = [];
         }
 
-        // Flatten all sessions into one list
         session.allSessions.forEach(s => {
-            courses[session.course].push({
+            const timeMinutes = timeToMinutes(s.time);
+
+            const entry = {
                 ...s,
                 instructor: session.instructor,
                 room: session.room,
                 topic: s.topic,
                 isBiology: session.course.startsWith('BIOL'),
-                course: session.course
-            });
+                course: session.course,
+                timeMinutes
+            };
+
+            courses[session.course].push(entry);
+
+            // Determine next upcoming session globally
+            const dayIndexNow = dayOrder.indexOf(currentDay);
+            const dayIndexSession = dayOrder.indexOf(s.day);
+
+            const isFuture =
+                (dayIndexSession > dayIndexNow) ||
+                (dayIndexSession === dayIndexNow && timeMinutes >= currentMinutes);
+
+            if (isFuture) {
+                if (!nextSessionGlobal ||
+                    dayIndexSession < nextSessionGlobal.dayIndex ||
+                    (dayIndexSession === nextSessionGlobal.dayIndex &&
+                     timeMinutes < nextSessionGlobal.timeMinutes)) {
+
+                    nextSessionGlobal = {
+                        dayIndex: dayIndexSession,
+                        timeMinutes
+                    };
+                }
+            }
         });
     });
 
-    // Step 2: Build HTML
     let html = '';
 
     Object.keys(courses).sort().forEach(course => {
 
         const sessionsList = courses[course];
 
-        // Step 3: Sort by day, then time
+        // Sort by day → time
         sessionsList.sort((a, b) => {
             const dayDiff = dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day);
             if (dayDiff !== 0) return dayDiff;
-            return timeToMinutes(a.time) - timeToMinutes(b.time);
+            return a.timeMinutes - b.timeMinutes;
         });
 
-        // Step 4: Group by day
+        // Group by day
         const byDay = {};
         sessionsList.forEach(s => {
-            if (!byDay[s.day]) {
-                byDay[s.day] = [];
-            }
+            if (!byDay[s.day]) byDay[s.day] = [];
             byDay[s.day].push(s);
         });
 
-        // Step 5: Render course block
-        html += `<div class="course-group">
-                    <h2 class="course-title">${course}</h2>`;
+        html += `
+        <div class="course-group">
+            <h2 class="course-title collapsible">${course}</h2>
+            <div class="course-content">
+        `;
 
-        // Render each day in order
         dayOrder.forEach(day => {
             if (!byDay[day]) return;
 
@@ -203,6 +233,7 @@ function renderListView(sessions) {
                         <h3 class="day-title">${day}</h3>`;
 
             byDay[day].forEach(s => {
+
                 const isOnline = s.room === 'ONLINE';
 
                 const onlineLinkKey =
@@ -213,13 +244,18 @@ function renderListView(sessions) {
                 const hasOnlineLink = onlineLinks[onlineLinkKey];
 
                 let roomDisplay = `${isOnline ? '🌐' : '🚪'} ${s.room}`;
-
                 if (isOnline && hasOnlineLink) {
                     roomDisplay = `<a href="${hasOnlineLink}" target="_blank">🌐 ONLINE</a>`;
                 }
 
+                // Highlight next upcoming session
+                const isNext =
+                    nextSessionGlobal &&
+                    dayOrder.indexOf(s.day) === nextSessionGlobal.dayIndex &&
+                    s.timeMinutes === nextSessionGlobal.timeMinutes;
+
                 html += `
-                    <div class="session-item">
+                    <div class="session-item ${isNext ? 'next-session' : ''}">
                         <span class="time">${s.time}</span>
                         <span class="leader">${s.instructor}</span>
                         <span class="room">${roomDisplay}</span>
@@ -235,11 +271,9 @@ function renderListView(sessions) {
             html += `</div>`;
         });
 
-        html += `</div>`;
+        html += `</div></div>`;
     });
 
-    listContainer.innerHTML = html;
-}
 
 // Create session card HTML - with sessions grouped and sorted by day and time
 function createSessionCard(session) {
