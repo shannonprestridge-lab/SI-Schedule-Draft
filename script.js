@@ -144,6 +144,30 @@ function renderListView(sessions) {
 
     if (sessions.length === 0) {
         listContainer.innerHTML = '';
+        
+// ✅ COLLAPSIBLE behavior
+document.querySelectorAll('.course-title').forEach(header => {
+    header.addEventListener('click', () => {
+        const content = header.nextElementSibling;
+
+        const isOpen = content.style.display === 'block';
+
+        // Close all courses first
+        document.querySelectorAll('.course-content').forEach(c => {
+            c.style.display = 'none';
+        });
+        document.querySelectorAll('.course-title').forEach(h => {
+            h.classList.remove('active');
+        });
+
+        // Open clicked one (if it was closed)
+        if (!isOpen) {
+            content.style.display = 'block';
+            header.classList.add('active');
+        }
+    });
+});
+
         return;
     }
 
